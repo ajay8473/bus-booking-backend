@@ -1,28 +1,38 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const Bus = require('./src/models/bus.model');
-const generateSeats = require('./src/utils/generateSeats');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Bus = require("./src/models/bus.model");
+
+const connectDB = async () => {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("MongoDB connected ✅");
+};
+
+const generateSeats = () => {
+  const seats = [];
+  let count = 1;
+
+  for (let row = 1; row <= 10; row++) {
+    for (let col = 1; col <= 4; col++) {
+      seats.push({
+        seatNumber: count++,
+        isAvailable: true,
+        row,
+        column: col,
+        seatType: "normal",
+      });
+    }
+  }
+
+  return seats;
+};
 
 const seedData = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected ✅");
+    await connectDB();
 
-    // पुराना data delete
     await Bus.deleteMany();
 
-    const buses = [
-      {
-        name: "Express 1",
-        departureCity: "Delhi",
-        arrivalCity: "Jaipur",
-        departureTime: "09:00 AM",
-        arrivalTime: "02:00 PM",
-        price: 500,
-        isAC: true,
-        seatType: "sleeper",
-        seats: generateSeats(40)
-      },
+    await Bus.insertMany([
       {
         name: "Volvo AC",
         departureCity: "Delhi",
@@ -31,29 +41,25 @@ const seedData = async () => {
         arrivalTime: "12:00 PM",
         price: 700,
         isAC: true,
-        seatType: "semi-sleeper",
-        seats: generateSeats(40)
+        seats: generateSeats(),
       },
       {
-        name: "Non AC Deluxe",
+        name: "Sleeper Bus",
         departureCity: "Delhi",
-        arrivalCity: "Lucknow",
-        departureTime: "10:00 PM",
-        arrivalTime: "06:00 AM",
-        price: 400,
+        arrivalCity: "Jaipur",
+        departureTime: "09:00 PM",
+        arrivalTime: "05:00 AM",
+        price: 1200,
         isAC: false,
-        seatType: "normal",
-        seats: generateSeats(40)
+        seats: generateSeats(),
       }
-    ];
-
-    await Bus.insertMany(buses);
+    ]);
 
     console.log("Data inserted successfully 🚀");
     process.exit();
-
   } catch (error) {
-    console.log("Error ❌", error);
+    console.log(error);
+    process.exit(1);
   }
 };
 
