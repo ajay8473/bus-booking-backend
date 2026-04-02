@@ -10,6 +10,8 @@ app.use(express.json());
 const busRoutes = require("./src/routes/bus.routes");
 const bookingRoutes = require("./src/routes/booking.routes");
 
+// debuging
+console.log("BUS routes:", busRoutes)
 //  routes use
 app.use("/api/buses", busRoutes);
 app.use("/api/bookings", bookingRoutes);
