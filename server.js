@@ -1,29 +1,32 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
+
+const connectDB = require("./src/config/db");
+
 const app = express();
 
-//  middleware
+// 🔥 DB connect
+connectDB();
+
+// middleware
+app.use(cors());
 app.use(express.json());
 
-//  routes import
+// routes
 const busRoutes = require("./src/routes/bus.routes");
 const bookingRoutes = require("./src/routes/booking.routes");
 
-// debuging
-console.log("BUS routes:", busRoutes)
-//  routes use
 app.use("/api/buses", busRoutes);
 app.use("/api/bookings", bookingRoutes);
 
-//  root test route
 app.get("/", (req, res) => {
-  res.send("Backend is running ");
+  res.send("Backend is running 🚀");
 });
 
-//  server start
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server running on port " + PORT);
 });
